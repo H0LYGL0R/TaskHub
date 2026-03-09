@@ -1,4 +1,4 @@
-﻿namespace Api.Services.DisposedService
+﻿namespace Api.Services.DisposedServices
 {
     public interface IHasInstanceId
     {

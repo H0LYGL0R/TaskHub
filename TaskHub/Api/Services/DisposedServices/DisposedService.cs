@@ -1,6 +1,6 @@
-﻿namespace Api.Services.DisposedService
+﻿namespace Api.Services.DisposedServices
 {
-    public sealed class DisposedService : IHasInstanceId, IDisposable
+    public class DisposedService : IHasInstanceId, IDisposable
     {
         public Guid InstanceId => _instanceId ?? (_instanceId = Guid.NewGuid()).Value;
 
