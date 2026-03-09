@@ -1,6 +1,6 @@
 ﻿namespace Api.Services.DisposedServices.SingletonServices.FirstSingletonService
 {
-    public interface IFirstSingletonService
+    public interface IFirstSingletonService : IHasInstanceId
     {
     }
 }

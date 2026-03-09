@@ -1,6 +1,6 @@
 ﻿namespace Api.Services.DisposedServices.ScopedServices.SecondScopedService
 {
-    public interface ISecondScopedService
+    public interface ISecondScopedService : IHasInstanceId
     {
     }
 }

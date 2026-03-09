@@ -1,6 +1,6 @@
 ﻿namespace Api.Services.DisposedServices.TransientServices.SecondTransientService
 {
-    public interface ISecondTransientService
+    public interface ISecondTransientService : IHasInstanceId
     {
     }
 }
