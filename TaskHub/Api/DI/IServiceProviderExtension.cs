@@ -10,7 +10,7 @@ namespace Api.DI
         private const string ComparisonLabel = "Is it the same instance?";
 
         public static void TestResolution<TService>(this IServiceProvider provider)
-            where TService : notnull
+            where TService : notnull, IHasInstanceId
         {
 
             TService first = provider.GetRequiredService<TService>();
