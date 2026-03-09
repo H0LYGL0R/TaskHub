@@ -1,6 +1,6 @@
 ﻿namespace Api.Services.DisposedServices.ScopedServices.FirstScopedService
 {
-    public interface IFirstSingletonService
+    public class FirstScopedService : DisposedService, IFirstScopedService
     {
     }
 }
