@@ -1,3 +1,4 @@
+using Api.Attributes;
 using Api.Controllers.Users.Request;
 using Api.Controllers.Users.Response;
 using Api.UseCases.Users.Interfaces;
@@ -10,13 +11,14 @@ namespace Api.Controllers.Users;
 /// </summary>
 [ApiController]
 [Route("users")]
+[ResponseTimeHeader]
+[StudentInfoHeaders]
 public sealed class UsersController : ControllerBase
 {
     /// <summary>
     /// UseCase управления пользователями
     /// </summary>
     private readonly IManageUserUseCase _userUseCase;
-
     public UsersController(IManageUserUseCase userUseCase)
     {
         _userUseCase = userUseCase;
@@ -29,6 +31,7 @@ public sealed class UsersController : ControllerBase
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Созданный пользователь</returns>
     [HttpPost]
+    [ValidateUserRequest]
     public async Task<ActionResult<UserResponse>> CreateUserAsync(
         [FromBody] CreateUserRequest? request,
         CancellationToken cancellationToken)
@@ -56,6 +59,7 @@ public sealed class UsersController : ControllerBase
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Пользователь или 404, если пользователь не найден</returns>
     [HttpGet("{id:guid}")]
+    [ValidateUserRequest]
     public async Task<ActionResult<UserResponse>> GetUserByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         var userResponse = await _userUseCase.GetUserByIdAsync(id, cancellationToken);
