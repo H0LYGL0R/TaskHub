@@ -13,17 +13,24 @@ public sealed class ValidateUserRequestAttribute : Attribute, IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        object? request = 
-            context.ActionArguments.Values.FirstOrDefault(arg => arg is not null);
+        if (context.ActionArguments.Count == 0)
+        {
+            context.Result = new BadRequestObjectResult(RequestMissingMessage);
+            return;
+        }
+        
+        object? request = context.ActionArguments.Values.FirstOrDefault();
 
         if (request is null)
         {
             context.Result = new BadRequestObjectResult(RequestMissingMessage);
             return;
         }
-
+        
         PropertyInfo? nameProperty = request.GetType().GetProperty(NameProperty);
-        string? name = nameProperty?.GetValue(request) as string;
+        if (nameProperty == null) return;
+
+        string? name = nameProperty.GetValue(request) as string;
 
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -31,7 +38,5 @@ public sealed class ValidateUserRequestAttribute : Attribute, IActionFilter
         }
     }
 
-    public void OnActionExecuted(ActionExecutedContext context)
-    {
-    }
+    public void OnActionExecuted(ActionExecutedContext context) { }
 }
