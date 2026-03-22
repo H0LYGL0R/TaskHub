@@ -15,7 +15,7 @@ public interface ITaskService
 
     Task<bool> SetTaskTitleAsync(Guid taskId, string title, CancellationToken cancellationToken);
 
-    Task<bool> DeleteTaskByIdAsync(Guid taskId, CancellationToken cancellationToken);
+    Task<bool> DeleteTaskAsync(Guid id, CancellationToken ct);
 
     Task DeleteAllTasksAsync(CancellationToken cancellationToken);
 }
