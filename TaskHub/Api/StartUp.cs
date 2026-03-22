@@ -1,8 +1,12 @@
 using Api.Middlewares;
+using Api.UseCases.Tasks;
+using Api.UseCases.Tasks.ManageTaskUseCase;
 using Api.UseCases.Users;
 using Api.UseCases.Users.Interfaces;
 using Dal;
+using Dal.Context;
 using Logic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace Api;
@@ -39,6 +43,7 @@ public sealed class Startup
         services.AddLogic();
         
         services.AddScoped<IManageUserUseCase, ManageUserUseCase>();
+        services.AddScoped<IManageTaskUseCase, ManageTaskUseCase>();
         
         services.AddCors(options =>
         {
@@ -70,6 +75,8 @@ public sealed class Startup
     /// <param name="app">Построитель приложения</param>
     public void Configure(IApplicationBuilder app)
     {
+        ApplyMigrations(app);
+
         if (Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -89,5 +96,13 @@ public sealed class Startup
         {
             endpoints.MapControllers();
         });
+    }
+
+    private static void ApplyMigrations(IApplicationBuilder app)
+    {
+        using IServiceScope scope = app.ApplicationServices.CreateScope();
+
+        scope.ServiceProvider.GetRequiredService<UserDbContext>().Database.Migrate();
+        scope.ServiceProvider.GetRequiredService<TaskDbContext>().Database.Migrate();
     }
 }
