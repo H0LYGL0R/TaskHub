@@ -1,6 +1,7 @@
 ﻿using Logic.Users.Services;
 using Logic.Users.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Api.Services.TaskService;
 
 namespace Logic;
 
@@ -16,5 +17,6 @@ public static class LogicStartUp
     public static void AddLogic(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITaskService, TaskService>();
     }
 }
