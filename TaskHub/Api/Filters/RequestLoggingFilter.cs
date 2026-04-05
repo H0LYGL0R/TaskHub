@@ -12,7 +12,7 @@ public sealed class RequestLoggingFilter(ILogger<RequestLoggingFilter> logger) :
         string method = context.HttpContext.Request.Method;
         string path = context.HttpContext.Request.Path;
 
-        _logger.LogInformation("Начало выполнения экшена: {Method} {Path}", method, path);
+        _logger.LogInformation("Начало выполнения: {Method} {Path}", method, path);
 
         long startedAt = Stopwatch.GetTimestamp();
         ActionExecutedContext executedContext = await next();
@@ -20,7 +20,7 @@ public sealed class RequestLoggingFilter(ILogger<RequestLoggingFilter> logger) :
 
         int statusCode = executedContext.HttpContext.Response.StatusCode;
         _logger.LogInformation(
-            "Завершение выполнения экшена: status={StatusCode}, elapsedMs={ElapsedMs:F2}",
+            "Завершение выполнения: status={StatusCode}, elapsedMs={ElapsedMs:F2}",
             statusCode,
             elapsedMs);
     }

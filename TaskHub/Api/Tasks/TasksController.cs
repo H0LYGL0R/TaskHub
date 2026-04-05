@@ -1,4 +1,5 @@
 ﻿﻿using Api.Attributes;
+using Api.Filters;
 using Api.Controllers.Tasks.Requests;
 using Api.Tasks.Requests;
 using Api.Tasks.Responses;
@@ -9,34 +10,20 @@ namespace Api.Tasks;
 
 [ApiController]
 [Route("tasks")]
-[ResponseTimeHeader]
-[StudentInfoHeaders]
+[TypeFilter(typeof(StudentInfoHeadersFilter))]
+[TypeFilter(typeof(RequestLoggingFilter))]
 public sealed class TasksController(IManageTaskUseCase taskUseCase) : ControllerBase
 {
     private readonly IManageTaskUseCase _taskUseCase = taskUseCase;
     private const string GetTaskByIdRouteName = "GetTaskById";
 
     [HttpPost]
+    [TypeFilter(typeof(ValidateCreateTaskRequestFilter))]
     public async Task<ActionResult<TaskResponse>> CreateTaskAsync(
         [FromBody] CreateTaskRequest? request,
         CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest("Тело запроса отсутствует");
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Title))
-        {
-            return BadRequest("Название задачи не задано");
-        }
-
-        if (request.CreatedByUserId == Guid.Empty)
-        {
-            return BadRequest("Идентификатор пользователя-создателя не задан");
-        }
-
-        TaskResponse? taskResponse = await _taskUseCase.CreateTaskAsync(request.Title, request.CreatedByUserId, 
+        TaskResponse? taskResponse = await _taskUseCase.CreateTaskAsync(request!.Title, request.CreatedByUserId, 
             cancellationToken);
         if (taskResponse is null)
         {
@@ -67,17 +54,13 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
     }
     
     [HttpPut("{id}/title")]
+    [TypeFilter(typeof(ValidateSetTaskTitleRequestFilter))]
     public async Task<IActionResult> SetTaskTitleAsync(
         [FromRouteTaskId] Guid id,
         [FromBody] SetTaskTitleRequest? request,
         CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest("Тело запроса отсутствует");
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Title))
+        if (string.IsNullOrWhiteSpace(request?.Title))
         {
             return BadRequest("Название задачи не задано");
         }

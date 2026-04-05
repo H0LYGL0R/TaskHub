@@ -12,7 +12,7 @@ public sealed class ValidateCreateTaskRequestFilter : IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        CreateTaskRequest? request = context.ActionArguments.Values.OfType<CreateTaskRequest?>().FirstOrDefault();
+        CreateTaskRequest? request = MakeRequest(context);
         if (request is null)
         {
             context.Result = new BadRequestObjectResult(RequestMissingMessage);
@@ -33,5 +33,17 @@ public sealed class ValidateCreateTaskRequestFilter : IActionFilter
 
     public void OnActionExecuted(ActionExecutedContext context)
     {
+    }
+
+    private static CreateTaskRequest? MakeRequest(ActionExecutingContext context)
+    {
+        CreateTaskRequest? request =
+            
+        context
+            .ActionArguments.Values
+            .OfType<CreateTaskRequest?>()
+            .FirstOrDefault();
+        
+        return request;
     }
 }
