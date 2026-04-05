@@ -1,4 +1,5 @@
 ﻿using Api.Attributes;
+using Api.Filters;
 using Api.Controllers.Tasks.Requests;
 using Api.Tasks.Requests;
 using Api.Tasks.Responses;
@@ -9,34 +10,20 @@ namespace Api.Tasks;
 
 [ApiController]
 [Route("tasks")]
-[ResponseTimeHeader]
-[StudentInfoHeaders]
+[TypeFilter(typeof(StudentInfoHeadersFilter))]
+[TypeFilter(typeof(RequestLoggingFilter))]
 public sealed class TasksController(IManageTaskUseCase taskUseCase) : ControllerBase
 {
     private readonly IManageTaskUseCase _taskUseCase = taskUseCase;
     private const string GetTaskByIdRouteName = "GetTaskById";
 
     [HttpPost]
+    [TypeFilter(typeof(ValidateCreateTaskRequestFilter))]
     public async Task<ActionResult<TaskResponse>> CreateTaskAsync(
         [FromBody] CreateTaskRequest? request,
         CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest("Тело запроса отсутствует");
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Title))
-        {
-            return BadRequest("Название задачи не задано");
-        }
-
-        if (request.CreatedByUserId == Guid.Empty)
-        {
-            return BadRequest("Идентификатор пользователя-создателя не задан");
-        }
-
-        TaskResponse? taskResponse = await _taskUseCase.CreateTaskAsync(request.Title, request.CreatedByUserId, 
+        TaskResponse? taskResponse = await _taskUseCase.CreateTaskAsync(request!.Title, request.CreatedByUserId, 
             cancellationToken);
         if (taskResponse is null)
         {
@@ -54,8 +41,8 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
     }
     
 
-    [HttpGet("{id:guid}", Name = GetTaskByIdRouteName)]
-    public async Task<ActionResult<TaskResponse>> GetTaskByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpGet("{id}", Name = GetTaskByIdRouteName)]
+    public async Task<ActionResult<TaskResponse>> GetTaskByIdAsync([FromRouteTaskId] Guid id, CancellationToken cancellationToken)
     {
         TaskResponse? taskResponse = await _taskUseCase.GetTaskByIdAsync(id, cancellationToken);
         if (taskResponse is null)
@@ -66,18 +53,14 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
         return Ok(taskResponse);
     }
     
-    [HttpPut("{id:guid}/title")]
+    [HttpPut("{id}/title")]
+    [TypeFilter(typeof(ValidateSetTaskTitleRequestFilter))]
     public async Task<IActionResult> SetTaskTitleAsync(
-        [FromRoute] Guid id,
+        [FromRouteTaskId] Guid id,
         [FromBody] SetTaskTitleRequest? request,
         CancellationToken cancellationToken)
     {
-        if (request is null)
-        {
-            return BadRequest("Тело запроса отсутствует");
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Title))
+        if (string.IsNullOrWhiteSpace(request?.Title))
         {
             return BadRequest("Название задачи не задано");
         }
@@ -91,8 +74,8 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
         return NoContent();
     }
     
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteTaskByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTaskByIdAsync([FromRouteTaskId] Guid id, CancellationToken cancellationToken)
     {
         bool isDeleted = await _taskUseCase.DeleteTaskByIdAsync(id, cancellationToken);
         if (!isDeleted)
