@@ -1,4 +1,4 @@
-﻿using Api.Attributes;
+﻿﻿using Api.Attributes;
 using Api.Controllers.Tasks.Requests;
 using Api.Tasks.Requests;
 using Api.Tasks.Responses;
@@ -54,8 +54,8 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
     }
     
 
-    [HttpGet("{id:guid}", Name = GetTaskByIdRouteName)]
-    public async Task<ActionResult<TaskResponse>> GetTaskByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpGet("{id}", Name = GetTaskByIdRouteName)]
+    public async Task<ActionResult<TaskResponse>> GetTaskByIdAsync([FromRouteTaskId] Guid id, CancellationToken cancellationToken)
     {
         TaskResponse? taskResponse = await _taskUseCase.GetTaskByIdAsync(id, cancellationToken);
         if (taskResponse is null)
@@ -66,9 +66,9 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
         return Ok(taskResponse);
     }
     
-    [HttpPut("{id:guid}/title")]
+    [HttpPut("{id}/title")]
     public async Task<IActionResult> SetTaskTitleAsync(
-        [FromRoute] Guid id,
+        [FromRouteTaskId] Guid id,
         [FromBody] SetTaskTitleRequest? request,
         CancellationToken cancellationToken)
     {
@@ -91,8 +91,8 @@ public sealed class TasksController(IManageTaskUseCase taskUseCase) : Controller
         return NoContent();
     }
     
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteTaskByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTaskByIdAsync([FromRouteTaskId] Guid id, CancellationToken cancellationToken)
     {
         bool isDeleted = await _taskUseCase.DeleteTaskByIdAsync(id, cancellationToken);
         if (!isDeleted)
