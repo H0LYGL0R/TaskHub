@@ -1,4 +1,4 @@
-﻿﻿using Api.Attributes;
+﻿using Api.Attributes;
 using Api.Filters;
 using Api.Controllers.Tasks.Requests;
 using Api.Tasks.Requests;
