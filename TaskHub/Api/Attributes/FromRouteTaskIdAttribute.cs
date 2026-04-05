@@ -8,7 +8,7 @@ public sealed class FromRouteTaskIdAttribute : ModelBinderAttribute
 {
     public FromRouteTaskIdAttribute()
     {
-        BinderType = null;
+        BinderType = typeof(FromRouteTaskIdBinder);
         BindingSource = BindingSource.Path;
     }
 }
